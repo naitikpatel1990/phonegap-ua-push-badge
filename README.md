@@ -1,3 +1,5 @@
+Below is same documentation like urbanairship push plugin but in this plugin i added badge count on push reciev and remove on app open with help of [ShortcutBadge library](https://github.com/leolin310148/ShortcutBadger) 
+
 # Urban Airship PhoneGap/Cordova Plugin
 
 This plugin supports PhoneGap/Cordova apps running on both iOS and Android.
