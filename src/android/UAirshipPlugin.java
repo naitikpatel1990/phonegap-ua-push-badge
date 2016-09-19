@@ -26,6 +26,7 @@
 package com.urbanairship.cordova;
 
 import android.Manifest;
+import android.content.SharedPreferences;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -94,6 +95,9 @@ public class UAirshipPlugin extends CordovaPlugin {
      * exceptions thrown by the actions are automatically caught and the callbackContext will return
      * an error result.
      */
+    public SharedPreferences sharedpreferences;
+    public Context context;
+
     private final static List<String> knownActions = Arrays.asList("setUserNotificationsEnabled", "setLocationEnabled", "setBackgroundLocationEnabled",
             "isUserNotificationsEnabled", "isSoundEnabled", "isVibrateEnabled", "isQuietTimeEnabled", "isInQuietTime", "isLocationEnabled", "isBackgroundLocationEnabled",
             "getLaunchNotification", "getChannelID", "getQuietTime", "getTags", "getAlias", "setAlias", "setTags", "setSoundEnabled", "setVibrateEnabled",
@@ -123,6 +127,8 @@ public class UAirshipPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(final String action, final JSONArray data, final CallbackContext callbackContext) {
+        context = this.cordova.getActivity().getApplicationContext();
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
         if (!knownActions.contains(action)) {
             Logger.debug("Invalid action: " + action);
             return false;

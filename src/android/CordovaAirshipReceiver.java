@@ -26,6 +26,7 @@
 package com.urbanairship.cordova;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -42,6 +43,8 @@ import me.leolin.shortcutbadger.ShortcutBadger;
 public class CordovaAirshipReceiver extends AirshipReceiver {
 
     private static final String TAG = "CordovaAirshipReceiver";
+    public SharedPreferences sharedpreferences;
+
 
     @Override
     protected void onChannelCreated(Context context, String channelId) {
@@ -64,11 +67,15 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
     @Override
     protected void onPushReceived(@NonNull Context context, @NonNull PushMessage message, boolean notificationPosted) {
         Log.i(TAG, "Received push message. Alert: " + message.getAlert() + ". posted notification: " + notificationPosted);
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
+        int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount", 0) + 1;
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt("badgeCount", badgeCount);
+        editor.commit();
 
-        int badgeCount = 1;
         ShortcutBadger.applyCount(context, badgeCount); //for 1.1.4+
         try {
-            ShortcutBadger.applyCountOrThrow(context , badgeCount);//for 1.1.3
+            ShortcutBadger.applyCountOrThrow(context, badgeCount);//for 1.1.3
         } catch (ShortcutBadgeException e) {
             e.printStackTrace();
         }
@@ -87,12 +94,26 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
     @Override
     protected boolean onNotificationOpened(@NonNull Context context, @NonNull NotificationInfo notificationInfo) {
         Log.i(TAG, "Notification opened. Alert: " + notificationInfo.getMessage().getAlert() + ". NotificationId: " + notificationInfo.getNotificationId());
-        ShortcutBadger.removeCount(context); //for 1.1.4+
-        try {
-            ShortcutBadger.removeCountOrThrow(context);//for 1.1.3
-        } catch (ShortcutBadgeException e) {
-            e.printStackTrace();
+
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
+        int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount" , 0);
+        if(badgeCount == 1){
+            ShortcutBadger.removeCount(context);
+        }else{
+            badgeCount = badgeCount - 1;
+
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("badgeCount", badgeCount);
+            editor.commit();
+
+            ShortcutBadger.applyCount(context, badgeCount); //for 1.1.4+
+            try {
+                ShortcutBadger.applyCountOrThrow(context, badgeCount);//for 1.1.3
+            } catch (ShortcutBadgeException e) {
+                e.printStackTrace();
+            }
         }
+
         UAirshipPluginManager.shared().launchedFromPush(notificationInfo.getNotificationId(), notificationInfo.getMessage());
 
         // Return false here to allow Urban Airship to auto launch the launcher activity
