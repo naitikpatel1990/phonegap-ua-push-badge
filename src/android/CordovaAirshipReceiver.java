@@ -130,4 +130,27 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
         // activity for foreground notification action buttons
         return false;
     }
+
+    @Override
+    protected void onNotificationDismissed(@NonNull Context context, @NonNull NotificationInfo notificationInfo) {
+        super.onNotificationDismissed(context, notificationInfo);
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
+        int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount" , 0);
+        if(badgeCount == 1){
+            ShortcutBadger.removeCount(context);
+        }else{
+            badgeCount = badgeCount - 1;
+
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("badgeCount", badgeCount);
+            editor.commit();
+
+            ShortcutBadger.applyCount(context, badgeCount); //for 1.1.4+
+            try {
+                ShortcutBadger.applyCountOrThrow(context, badgeCount);//for 1.1.3
+            } catch (ShortcutBadgeException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
