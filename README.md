@@ -1,6 +1,6 @@
 # Update in to Urban Airship PhoneGap/Cordova Plugin
 
-Below is same documentation like urbanairship push plugin but in this plugin i added badge count on push receive and remove on app open with help of [ShortcutBadge library](https://github.com/leolin310148/ShortcutBadger), for android.
+I added badge count on push receive and remove on app open with help of [ShortcutBadge library](https://github.com/leolin310148/ShortcutBadger), for android.
 
 # Urban Airship PhoneGap/Cordova Plugin
 
@@ -28,7 +28,7 @@ Please contact support@urbanairship.com for any issues integrating or using this
 
 1. Install this plugin using PhoneGap/Cordova CLI:
 
-        cordova plugin add urbanairship-cordova
+        cordova plugin add https://github.com/naitikpatel1990/phonegap-ua-push-badge
 
 2. Modify the config.xml file to set the Android minimum sdk version to 16:
 
