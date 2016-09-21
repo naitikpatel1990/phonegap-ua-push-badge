@@ -45,16 +45,21 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
     private static final String TAG = "CordovaAirshipReceiver";
     public SharedPreferences sharedpreferences;
 
-
     @Override
     protected void onChannelCreated(Context context, String channelId) {
         Log.i(TAG, "Channel created. Channel ID: " + channelId + ".");
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
+        int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount", 0);
+        Log.i(TAG, "Badge count in onChannelCreated ... " + badgeCount);
         UAirshipPluginManager.shared().channelUpdated(channelId, true);
     }
 
     @Override
     protected void onChannelUpdated(Context context, String channelId) {
         Log.i(TAG, "Channel updated. Channel ID: " + channelId + ".");
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
+        int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount", 0);
+        Log.i(TAG, "Badge count in onChannelUpdated ... " + badgeCount);
         UAirshipPluginManager.shared().channelUpdated(channelId, true);
     }
 
@@ -88,6 +93,7 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
     @Override
     protected void onNotificationPosted(@NonNull Context context, @NonNull NotificationInfo notificationInfo) {
         Log.i(TAG, "Notification posted. Alert: " + notificationInfo.getMessage().getAlert() + ". NotificationId: " + notificationInfo.getNotificationId());
+
         UAirshipPluginManager.shared().pushReceived(notificationInfo.getNotificationId(), notificationInfo.getMessage());
     }
 
@@ -97,8 +103,17 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
 
         sharedpreferences = context.getSharedPreferences("badgecount", 0);
         int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount" , 0);
+
         if(badgeCount == 1){
+
+            badgeCount = badgeCount - 1;
+
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("badgeCount", badgeCount);
+            editor.commit();
+
             ShortcutBadger.removeCount(context);
+
         }else{
             badgeCount = badgeCount - 1;
 
@@ -124,6 +139,34 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
     protected boolean onNotificationOpened(@NonNull Context context, @NonNull NotificationInfo notificationInfo, @NonNull ActionButtonInfo actionButtonInfo) {
         Log.i(TAG, "Notification action button opened. Button ID: " + actionButtonInfo.getButtonId() + ". NotificationId: " + notificationInfo.getNotificationId());
 
+        sharedpreferences = context.getSharedPreferences("badgecount", 0);
+        int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount" , 0);
+
+        if(badgeCount == 1){
+
+            badgeCount = badgeCount - 1;
+
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("badgeCount", badgeCount);
+            editor.commit();
+
+            ShortcutBadger.removeCount(context);
+
+        }else{
+            badgeCount = badgeCount - 1;
+
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("badgeCount", badgeCount);
+            editor.commit();
+
+            ShortcutBadger.applyCount(context, badgeCount); //for 1.1.4+
+            try {
+                ShortcutBadger.applyCountOrThrow(context, badgeCount);//for 1.1.3
+            } catch (ShortcutBadgeException e) {
+                e.printStackTrace();
+            }
+        }
+
         UAirshipPluginManager.shared().launchedFromPush(notificationInfo.getNotificationId(), notificationInfo.getMessage());
 
         // Return false here to allow Urban Airship to auto launch the launcher
@@ -137,6 +180,13 @@ public class CordovaAirshipReceiver extends AirshipReceiver {
         sharedpreferences = context.getSharedPreferences("badgecount", 0);
         int badgeCount = context.getSharedPreferences("badgecount", 0).getInt("badgeCount" , 0);
         if(badgeCount == 1){
+
+            badgeCount = badgeCount - 1;
+
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putInt("badgeCount", badgeCount);
+            editor.commit();
+            
             ShortcutBadger.removeCount(context);
         }else{
             badgeCount = badgeCount - 1;

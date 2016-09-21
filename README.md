@@ -1,5 +1,3 @@
-Below is same documentation like urbanairship push plugin but in this plugin i added badge count on push receive and remove on app open with help of [ShortcutBadge library](https://github.com/leolin310148/ShortcutBadger), for android.
-
 # Urban Airship PhoneGap/Cordova Plugin
 
 This plugin supports PhoneGap/Cordova apps running on both iOS and Android.
@@ -28,7 +26,13 @@ Please contact support@urbanairship.com for any issues integrating or using this
 
         cordova plugin add urbanairship-cordova
 
-2. Modify the config.xml file to contain (replacing with your configuration settings):
+2. Modify the config.xml file to set the Android minimum sdk version to 16:
+
+        <platform name="android">
+            <preference name="android-minSdkVersion" value="16" />
+        </platform> 
+
+3. Modify the config.xml file to contain (replacing with your configuration settings):
 
         <!-- Urban Airship app credentials -->
         <preference name="com.urbanairship.production_app_key" value="Your Production App Key" />
@@ -53,6 +57,9 @@ Please contact support@urbanairship.com for any issues integrating or using this
 
         <!-- Override the Android notification icon -->
         <preference name="com.urbanairship.notification_icon" value="ic_notification" />
+
+        <!-- Override the Android notification large icon -->
+        <preference name="com.urbanairship.notification_large_icon" value="ic_notification_large" />
     
         <!-- Override the Android notification sound (sound file should be in res/raw)-->
         <preference name="com.urbanairship.notification_sound" value="push" />
@@ -67,14 +74,18 @@ Please contact support@urbanairship.com for any issues integrating or using this
         <preference name="com.urbanairship.auto_launch_message_center" value="true | false" />
 
 
-
-3. Enable user notifications
+4. Enable user notifications
 ```
     // Enable user notifications (will prompt the user to accept push notifications)
     UAirship.setUserNotificationsEnabled(true, function (enabled) {
         console.log("User notifications are enabled! Fire away!")
     })
 ```
+
+#### iOS
+Enable Push Notifications in the project editor's Capabilities pane:
+
+![Alt text](phonegap-enable-push.png?raw=true "Enable Push Notifications")
 
 ### Sample
 
